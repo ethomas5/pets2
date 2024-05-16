@@ -1,43 +1,57 @@
 <?php
 session_start();
 
-//Controller file
-
-//Turn on error reporting
-ini_set("display_errors", 1);
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+//require autoload file
 require_once ('vendor/autoload.php');
 
-//Instantiate the F3 Base class
+//instantiate the f3 base class
 $f3 = Base::instance();
 
-//Define a default root
-$f3->route('GET /', function () {
+//define a default route
+//https://dpjprogramming.greenriverdev.com/328/HelloFatFree/
+$f3->route('GET /', function(){
+    //echo '<h1> Hello Pets</h1>';
+
+    //render view page
     $view = new Template();
-    echo $view->render('views/home-page.html');
+    echo $view->render('views/home.html');
 });
 
-$f3->route('GET|POST /order', function ($f3) {
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $pet = $_POST['pet'];
-        $color = $_POST['color'];
-        if (empty($pet) || empty($color)) {
-            echo "Please submit type in all inputs";
-        } else {
+//order
+$f3->route('GET|POST /order', function($f3){
+
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        //Validate the data
+        if (empty($_POST['pet']) || empty($_POST['color']) || empty($_POST['type'])) {
+            echo "Please supply a pet type";
+        }
+
+        else{
+            if($_POST['type'] == "robot"){
+                $pet = new RobotPet($_POST['pet'], $_POST['color']);
+            }
+            if($_POST['type'] == "stuffed"){
+                $pet = new StuffedPet($_POST['pet'], $_POST['color']);
+            }
             $f3->set('SESSION.pet', $pet);
-            $f3->set('SESSION.color', $color);
             $f3->reroute("summary");
         }
     }
+
     $view = new Template();
-    echo $view->render('views/order.html');
+    echo $view->render('views/pet-order.html');
 });
 
-$f3->route('GET /summary', function () {
+$f3->route('GET /summary', function(){
+    var_dump('SESSION.pet');
+    //render view page
     $view = new Template();
-    echo $view->render('views/summary.html');
+    echo $view->render('views/order-summary.html');
 });
 
-// Run Fat-Free
+//run fat free
 $f3->run();
+?>
