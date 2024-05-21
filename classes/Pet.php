@@ -8,4 +8,14 @@ class Pet {
         $this->_animal = $animal;
         $this->_color = $color;
     }
+
+    public function getAnimal(): string
+    {
+        return $this->_animal;
+    }
+
+    public function getColor(): string
+    {
+        return $this->_color;
+    }
 }
